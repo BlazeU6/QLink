@@ -1,6 +1,7 @@
 import { AxiosRequestConfig, AxiosPromise, Method, AxiosResponse, ResolveFn, RejectFn } from "../types";
 import dispatchRequest  from "./dispatchRequest"
 import { InterceptorManager } from "./interceptorManager";
+import mergeConfig from "./mergeConfig";
 
 interface Interceptors {
   request: InterceptorManager<AxiosRequestConfig>
@@ -14,8 +15,10 @@ interface PromiseChain<T> {
 
 export default class Axios {
   interceptors:  Interceptors
+  defaults: AxiosRequestConfig
 
-  constructor(){
+  constructor(initConfig: AxiosRequestConfig){
+    this.defaults = initConfig
     this.interceptors = {
       request: new InterceptorManager<AxiosRequestConfig>(),
       response: new InterceptorManager<AxiosResponse>()
@@ -33,6 +36,9 @@ export default class Axios {
       // 这里说明传入的就是单个参数，且此处的形参url就是config
       config = url
     }
+
+    // 合并配置
+    config = mergeConfig(this.defaults, config)
 
     const chain: PromiseChain<any>[] = [{
       resolved: dispatchRequest,
