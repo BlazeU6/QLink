@@ -20,3 +20,27 @@ export function extend<T, U>(to: T, from: U): T & U {
   }
   return to as T & U
 }
+
+export function deepClone(...objs: any[]): any {
+  // objs是一个数组，里面有两个对象
+  const result = Object.create(null)
+  objs.forEach(obj => {
+    if(obj){
+      Object.keys(obj).forEach(key => {
+        const val = obj[key]
+
+        if(isPlainObject(val)){
+          // 判断result中是否已经有了这个值
+          if(isPlainObject(result[key])){
+            result[key] = deepClone(result[key], val)
+          }else{
+            result[key] = deepClone({}, val)
+          }
+        }else{
+          result[key] = val
+        }
+      })
+    }
+  })
+  return result
+}
