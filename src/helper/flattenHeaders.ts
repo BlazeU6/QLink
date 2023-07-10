@@ -1,4 +1,4 @@
-import { deepClone } from "./url"
+import { deepClone } from "./utils"
 
 export function flattenHeaders(headers: any, method: Method): any {
   if(!headers){

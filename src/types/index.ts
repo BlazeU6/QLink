@@ -1,5 +1,4 @@
 import { InterceptorManager } from "../core/interceptorManager"
-import defaluts from ''
 
 export type Method = 'get' | 'GET' | 'post' | 'POST' | 'delete' |'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'put' | 'PUT' | 'patch' | 'PATCH'
 
@@ -11,6 +10,8 @@ export interface AxiosRequestConfig {
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?:number
+  transformRequest?: AxiosTransformer | AxiosTransformer[]
+  transformResponse?: AxiosTransformer | AxiosTransformer[]
 
   [propName: string]: any
 }
@@ -82,4 +83,12 @@ export interface ResolveFn<T = any> {
 
 export interface RejectFn {
   (error: any): any
+}
+
+export interface AxiosTransformer {
+  (data:any, headers?: any): any
+}
+
+export interface AxiosStatic extends AxiosInstance {
+  create(config?: AxiosRequestConfig): AxiosInstance
 }

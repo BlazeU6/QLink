@@ -1,4 +1,4 @@
-import { deepClone } from "../helper/url";
+import { deepClone } from "../helper/utils";
 import { isPlainObject } from "../helper/utils";
 import { AxiosRequestConfig } from "../types";
 
@@ -9,7 +9,9 @@ function defaultStrategy(val1: any, val2: any): any{
 }
 
 function formVal2Strategy(val1: any, val2: any): any{
-  if(typeof val2 !== 'undefined')return val2
+  if(typeof val2 !== 'undefined'){
+    return val2
+  }
 }
 
 // 合并策略函数的映射 后面要根据不同字段来采用何种合并策略函数
@@ -22,6 +24,7 @@ strategyFormVal2.forEach(key => {
   strategyMap[key] = formVal2Strategy
 })
 
+// 复杂对象合并策略
 function deepMergeStrategy(val1: any, val2: any): any {
   if(isPlainObject(val2)) {
     return deepClone(val1, val2)
@@ -29,7 +32,7 @@ function deepMergeStrategy(val1: any, val2: any): any {
     return val2
   }else if(isPlainObject(val1)){
     return deepClone(val1)
-  }else{
+  }else if(typeof val1 !== 'undefined'){
     return val1
   }
 }
@@ -40,8 +43,9 @@ strategyKeysDeepMerge.forEach(key => {
 })
 
 export default function mergeConfig(config1: AxiosRequestConfig, config2?: AxiosRequestConfig): AxiosRequestConfig {
-  if(!config2)config2 = {}
-
+  if(!config2) {
+    config2 = {}
+  }
   const config = Object.create(null)
 
   for(let key in config2){
@@ -59,4 +63,5 @@ export default function mergeConfig(config1: AxiosRequestConfig, config2?: Axios
     // config1代表默认配置，config2代表自定义配置
     config[key] = strategy(config1[key], config2![key])
   }
+  return config
 }

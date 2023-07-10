@@ -1,3 +1,5 @@
+import { transformRequest as processRequest, transformResponse as processResponse } from "./helper/data";
+import { processHeaders } from "./helper/header";
 import { AxiosRequestConfig } from "./types";
 
 const defaults: AxiosRequestConfig = {
@@ -7,7 +9,18 @@ const defaults: AxiosRequestConfig = {
     common:{
       Accept: 'application/json,text/plain,*/*'
     }
-  }
+  },
+  transformRequest: [
+    function(data: any, headers?: any): any {
+      processHeaders(headers, data)
+      return processRequest(data)
+    }
+  ],
+  transformResponse: [
+    function(data: any): any {
+      return processResponse(data)
+    }
+  ]
 }
 
 const methodWithoutData = ['delete', 'get', 'head', 'options']
