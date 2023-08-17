@@ -12,6 +12,7 @@ export interface AxiosRequestConfig {
   timeout?:number
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
+  cancelToken?: CancelToken
 
   [propName: string]: any
 }
@@ -91,4 +92,20 @@ export interface AxiosTransformer {
 
 export interface AxiosStatic extends AxiosInstance {
   create(config?: AxiosRequestConfig): AxiosInstance
+}
+
+// 定义实例类型
+export interface CancelToken {
+  promise: Promise<string>
+  reason?: string
+}
+
+// CancelExecutor是CancelToken类构造函数参数的接口定义
+export interface CancelExecutor {
+  // 定义取消方法
+  (cancel: Canceler):void
+}
+
+export interface Canceler {
+  (message?: string): void
 }
