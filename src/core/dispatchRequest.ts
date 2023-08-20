@@ -1,20 +1,19 @@
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from "../types"
-import xhr from "./xhr"
-import { buildURL } from "../helper/url"
-import { transformRequest, transformResponse } from "../helper/data"
-import { processHeaders } from "../helper/header"
-import { flattenHeaders } from "../helper/flattenHeaders"
-import transform from "./transform"
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
+import xhr from './xhr'
+import { buildURL } from '../helper/url'
+import { transformRequest, transformResponse } from '../helper/data'
+import { processHeaders } from '../helper/header'
+import { flattenHeaders } from '../helper/flattenHeaders'
+import transform from './transform'
 
 // 实现URL参数处理逻辑
-function transformUrl(config: AxiosRequestConfig): string{
-
+function transformUrl(config: AxiosRequestConfig): string {
   const { url, params } = config
   return buildURL(url!, params)
 }
 
 // 处理config
-function processConfig(config: AxiosRequestConfig): void{
+function processConfig(config: AxiosRequestConfig): void {
   config.url = transformUrl(config)
   // 把对请求数据的处理和对响应数据的处理改成使用 transform 函数实现
   config.data = transform(config.data, config.headers, config.transformRequest)
@@ -23,12 +22,20 @@ function processConfig(config: AxiosRequestConfig): void{
 }
 
 //处理响应的data
-function transformResponseData (res: AxiosResponse):  AxiosResponse{
+function transformResponseData(res: AxiosResponse): AxiosResponse {
   res.data = transform(res.data, res.headers, res.config.transformResponse)
   return res
 }
 
-export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise{
+function throwIfCancellationRequested(config: AxiosRequestConfig): void {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested()
+  }
+}
+
+export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
+  // 发送请求之前先检查一下cancelToken是否已经被用过了，如果已经被用过了则不用发请求，直接抛异常
+  throwIfCancellationRequested(config)
   processConfig(config)
   return xhr(config).then(res => {
     return transformResponseData(res)
