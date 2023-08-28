@@ -1,4 +1,3 @@
-import { log } from "console"
 import axios from "../../src/index"
 
 

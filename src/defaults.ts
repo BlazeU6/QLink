@@ -1,12 +1,15 @@
-import { transformRequest as processRequest, transformResponse as processResponse } from "./helper/data";
-import { processHeaders } from "./helper/header";
-import { AxiosRequestConfig } from "./types";
+import {
+  transformRequest as processRequest,
+  transformResponse as processResponse
+} from './helper/data'
+import { processHeaders } from './helper/header'
+import { AxiosRequestConfig } from './types'
 
 const defaults: AxiosRequestConfig = {
   method: 'get',
   timeout: 0,
   headers: {
-    common:{
+    common: {
       Accept: 'application/json,text/plain,*/*'
     }
   },
@@ -20,7 +23,13 @@ const defaults: AxiosRequestConfig = {
     function(data: any): any {
       return processResponse(data)
     }
-  ]
+  ],
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  validateStatus(status: number): boolean {
+    return status >= 200 && status < 300
+  }
 }
 
 const methodWithoutData = ['delete', 'get', 'head', 'options']
@@ -36,4 +45,4 @@ methodWithData.forEach(method => {
   }
 })
 
-export default defaults;
+export default defaults

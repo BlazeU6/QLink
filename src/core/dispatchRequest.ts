@@ -1,14 +1,23 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
 import xhr from './xhr'
 import { buildURL } from '../helper/url'
-import { transformRequest, transformResponse } from '../helper/data'
-import { processHeaders } from '../helper/header'
 import { flattenHeaders } from '../helper/flattenHeaders'
 import transform from './transform'
 
+export function isAbsoluteUrl(url: string): boolean {
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url)
+}
+
+export function combineUrl(baseURL: string, relativeUrl?: string): string {
+  return relativeUrl ? baseURL.replace(/\/+$/, '') + '/' + relativeUrl.replace(/^\/+/, '') : baseURL
+}
+
 // 实现URL参数处理逻辑
 function transformUrl(config: AxiosRequestConfig): string {
-  const { url, params } = config
+  let { url, params, baseURL } = config
+  if (baseURL && !isAbsoluteUrl(url!)) {
+    url = combineUrl(baseURL, url)
+  }
   return buildURL(url!, params)
 }
 

@@ -1,7 +1,8 @@
-import { deepClone } from "./utils"
+import { Method } from '../types'
+import { deepClone } from './utils'
 
 export function flattenHeaders(headers: any, method: Method): any {
-  if(!headers){
+  if (!headers) {
     return headers
   }
 
